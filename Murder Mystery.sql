@@ -43,12 +43,12 @@ ssn = 111564949
 
 -- Query #4 Find the other witness
 SELECT
-	*
+   *
 FROM
-	person
+   person
 WHERE
-	name LIKE '%Annabel%' AND
-	address_street_name = 'Franklin Ave'
+   name LIKE '%Annabel%' AND
+   address_street_name = 'Franklin Ave'
 
 # 5. This allowed us to find Witness #2. 
 
@@ -86,13 +86,13 @@ WHERE
 
 -- Query #7 Finding the suspects who fit the description of being at the gym at that date from witness 2. 
 SELECT
-	m.*
+   m.*
 FROM
-	get_fit_now_member AS m
+   get_fit_now_member AS m
 JOIN
-	get_fit_now_check_in AS c
+   get_fit_now_check_in AS c
 ON
-	m.id = c.membership_id
+   m.id = c.membership_id
 WHERE
 	c.check_in_date = 20180109 AND
 	m.membership_status = 'gold' AND
@@ -116,19 +116,110 @@ membership_status = 'gold'
 
 # 10. This allows me to check which one of these two people have a license plate against this person_id
 
--- Query #8
+-- Query #8 find  a matching license plate owner
 SELECT
-	dl.*
+   dl.*
 FROM
-	drivers_license AS dl
+   drivers_license AS dl
 JOIN
-	person AS p
+   person AS p
 ON
-	p.license_id = dl.id
+   p.license_id = dl.id
 WHERE
-	p.id = 67318 AND
-	dl.plate_number LIKE '%H42W%'
+   p.id = 67318 AND
+   dl.plate_number LIKE '%H42W%'
 
 # 11. This query was ran with both person_id but this was the result that actually came back to someone who had the correct license plate. 
 -----------------------------------------------------------------------------------------------------------------
 WE HAVE FOUND THE MURDERER AND SOLVED THE CASE FOR THE DETECTIVES IN SQL CITY
+-----------------------------------------------------------------------------------------------------------------
+*** BONUS ***
+Look up the killers interview to find out who the villain behind the entire crime is. 
+
+-- Query #9 find the interview of the killer
+SELECT
+   *
+FROM
+   interview
+WHERE
+   person_id = 67318
+
+# 12. This is what the interview transcript reads. 
+	- I was hired by a woman with a lot of money. I dont know her name but I know shes around 5ft5in (65inches) or 5ft7in (67inches). 
+	- She has red hair and she drives a Tesla Model S. I know that she attended the SQL Symphony Concert 3 times in December 2017 (201712??)
+
+-- Query #10 find the driver's license who fits this description
+SELECT
+   *
+FROM
+   drivers_license
+WHERE
+   gender = 'female' AND
+   (height = 65 OR height = 67) AND
+   hair_color = 'red' AND
+   car_make = 'Tesla' AND
+   car_model = 'Model S'
+
+# 13. This brought back only one result with these results for the villain
+
+Villain #1. 
+drivers_license_id = 918773
+age = 48
+height = 65
+eye_color = 'red'
+gender = 'female'
+plate_number = '917UU3'
+car_make = 'Tesla'
+car_model = 'Model S'
+
+# 14. Now lets just run this table against the person table and we can double check the facebook event one but there prob wont be a need with only one result here.
+
+-- Query #11 Find the person's information
+SELECT
+   p.*
+FROM
+   person AS p
+JOIN
+   drivers_license AS dl
+ON
+   dl.id = p.license_id
+WHERE
+   dl.id = 918773
+
+Villain #1 info
+person_id = 78881
+name = 'Red Korb'
+license_id = 918773
+address_number = 107
+address_street_name = 'Camerata Dr'
+ssn = 961388910
+
+# 15. THIS WAS WRONG FOR SOME REASON SO WELL TRY THE FACEBOOK ROUTE. 
+
+-- Query #12. Facebook check in route
+SELECT
+   *,
+   person_id,
+   COUNT(*) AS visits
+FROM
+   facebook_event_checkin
+WHERE
+   date >= 20171201 AND date <= 20171231 AND
+   event_name = 'SQL Symphony Concert'
+GROUP BY
+   person_id
+HAVING
+   COUNT(*) = 3
+
+# 16. Lets see if one of the two results we got here are correct. 24556 or 99716 Only one returned a girls name so i checked her info. 
+
+-- Query #13 checking the person id
+SELECT
+   *
+FROM
+   person
+WHERE
+   id = 99716
+
+----------------------------------------------------------------------------------------------------------------------------
+YOU HAVE FOUND THE VILLAIN BEHIND THE MURDER IN SQL CITY
