@@ -1,0 +1,2 @@
+-- A crima has taken place and the detectives need your help. The detective gave you the crime scene report, but you shoehow lost it. 
+-- 1. You vaguely remember that the crime was a 'MURDER' that occurred sometime on 'Jan.15.2018' and that it took place in 'SQL City'. We'll start by retrieving the corrresponding crime scene report from the police department's database. 
